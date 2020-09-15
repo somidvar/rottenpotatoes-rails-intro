@@ -11,13 +11,12 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #part 2
+    #Rating filter
     @all_ratings = ['G','PG','PG-13','R']
-    @ratings=@all_ratings
     if params[:ratings]==nil and session[:ratings]!=nil #reloading when the user was away
       
     elsif params[:ratings]==nil and session[:ratings]==nil #first time with no ratings
-      session[:ratings]=@ratings
+      session[:ratings]=@all_ratings
       
     elsif params[:ratings]!=nil and session[:ratings]==nil #first time with ratings
       session[:ratings]=params[:ratings].keys
@@ -29,7 +28,7 @@ class MoviesController < ApplicationController
     @ratings=session[:ratings]
     @movies=Movie.all.with_ratings(@ratings)
     
-    #Part 1
+    #Sorting
     if params[:sorting_parameter]==nil and session[:sorting_parameter]!=nil #reloading when the user was away
       sorting_parameter=session[:sorting_parameter]
     elsif params[:sorting_parameter]==nil and session[:sorting_parameter]==nil #first time with no sorting
@@ -42,9 +41,8 @@ class MoviesController < ApplicationController
       session[:sorting_parameter]=params[:sorting_parameter]
     
     end
+    #This part is changed from the original version to ensure the sorting happens only on the filtered moveis
     sorting_parameter=session[:sorting_parameter]
-    #render plain: sorting_parameter.inspect
-
     if sorting_parameter == 'title'
       @movies = Movie.with_ratings(session[:ratings]).sort_by { |movie| movie.title }
       

@@ -13,6 +13,8 @@ class MoviesController < ApplicationController
   def index
     #part 2
     @all_ratings = ['G','PG','PG-13','R']
+    @ratings=['G']
+    sorting_parameter='title'
     if params[:ratings]==nil and session[:ratings]!=nil #reloading when the user was away
       
     elsif params[:ratings]==nil and session[:ratings]==nil #first time with no ratings
@@ -32,7 +34,8 @@ class MoviesController < ApplicationController
     if params[:sorting_parameter]==nil and session[:sorting_parameter]!=nil #reloading when the user was away
       sorting_parameter=session[:sorting_parameter]
     elsif params[:sorting_parameter]==nil and session[:sorting_parameter]==nil #first time with no sorting
-
+      session[:sorting_parameter]=nil
+      
     elsif params[:sorting_parameter]!=nil and session[:sorting_parameter]==nil #first time with sorting
       session[:sorting_parameter]=params[:sorting_parameter]
       

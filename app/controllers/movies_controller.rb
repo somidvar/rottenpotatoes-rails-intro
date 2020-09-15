@@ -13,19 +13,42 @@ class MoviesController < ApplicationController
   def index
     #part 2
     @all_ratings = ['G','PG','PG-13','R']
-    if params[:ratings]==nil
-      @ratings=@all_ratings
-    else
-      @ratings=params[:ratings].keys
+    if params[:ratings]==nil and session[:ratings]!=nil #reloading when the user was away
+      
+    elsif params[:ratings]==nil and session[:ratings]==nil #first time with no ratings
+      session[:ratings]=@ratings
+      
+    elsif params[:ratings]!=nil and session[:ratings]==nil #first time with ratings
+      session[:ratings]=params[:ratings].keys
+      
+    elsif params[:ratings]!=nil and session[:ratings]!=nil #several times with ratings
+      session[:ratings]=params[:ratings].keys
+      
     end
+    @ratings=session[:ratings]
     @movies=Movie.all.with_ratings(@ratings)
     
     #Part 1
-    sorting_parameter = params[:sorting_parameter]
-    if sorting_parameter == 'title' then
-      @movies = Movie.all.sort_by { |movie| movie.title }
-    elsif sorting_parameter == 'release_date' then
-      @movies = Movie.all.sort_by { |movie| movie.release_date }
+    if params[:sorting_parameter]==nil and session[:sorting_parameter]!=nil #reloading when the user was away
+      sorting_parameter=session[:sorting_parameter]
+    elsif params[:sorting_parameter]==nil and session[:sorting_parameter]==nil #first time with no sorting
+
+    elsif params[:sorting_parameter]!=nil and session[:sorting_parameter]==nil #first time with sorting
+      session[:sorting_parameter]=params[:sorting_parameter]
+      
+    elsif params[:sorting_parameter]!=nil and session[:sorting_parameter]!=nil #serveral times with sorting
+      session[:sorting_parameter]=params[:sorting_parameter]
+    
+    end
+    sorting_parameter=session[:sorting_parameter]
+    #render plain: sorting_parameter.inspect
+
+    if sorting_parameter == 'title'
+      @movies = Movie.with_ratings(session[:ratings]).sort_by { |movie| movie.title }
+      
+    elsif sorting_parameter == 'release_date'
+      @movies = Movie.with_ratings(session[:ratings]).sort_by { |movie| movie.release_date }
+      
     end
   end
 
